@@ -40,7 +40,7 @@ http.HTTPConnection._http_vsn_str = "HTTP/1.0"
 #     execute_sql(sql_path / "create_tables.sql", engine, read_file=True)
 
 # set path to archive
-archive_path = Path.cwd() / "archive"
+archive_path = Path.cwd() / "archives" / "archive_raw"
 
 # set url to download data from
 base_url = "https://salaries.myflorida.com/"
