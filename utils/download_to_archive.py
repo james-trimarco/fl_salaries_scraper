@@ -16,13 +16,17 @@ DOWNLOAD_URL = BASE_URL + URL_SUFFIX
 
 
 def set_http_version():
-    # This move seems to reduce the likelihood of IncompleteRead errors
+    """ This move seems to reduce the likelihood of IncompleteRead errors.
+    """
     http.HTTPConnection._http_vsn = 10
     http.HTTPConnection._http_vsn_str = "HTTP/1.0"
     return
 
 
 def scrape_salary_data(archive_path, download_url, max_retries=5):
+    """ Pulls down the complete .csv file of Florida salaries 
+        and stores it in the selected archive directory. 
+    """
     today = date.today()
     formatted_date = date.today().strftime("%Y-%m-%d")
     current_salaries_path = archive_path / f"fl_salaries_{formatted_date}.csv"
