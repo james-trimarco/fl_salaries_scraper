@@ -14,10 +14,10 @@ def private_dir(tmp_path_factory):
 
 
 @pytest.fixture(scope="session")
-def archives_dir(tmp_path_factory):
+def archive_dir(tmp_path_factory):
     basetemp = Path.cwd() / "temp_dir"
     os.environ["PYTEST_DEBUG_TEMPROOT"] = str(basetemp)
     basetemp.mkdir(parents=True, exist_ok=True)
-    dir = tmp_path_factory.mktemp("archives", numbered=False)
+    dir = tmp_path_factory.mktemp("archive", numbered=False)
     print(dir)
     return dir
