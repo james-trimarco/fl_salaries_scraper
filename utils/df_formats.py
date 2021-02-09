@@ -1,7 +1,7 @@
 FORMATS = {
     "input": {
         "Agency Name": ["object"],
-        "Budget Entity": ["float64"],
+        "Budget Entity": ["object"],
         "Position Number": ["object"],
         "Last Name": ["object"],
         "First Name": ["object"],
@@ -26,7 +26,7 @@ FORMATS = {
         "class_code": ["object"],
         "class_title": ["object"],
         "state_hire_date": ["datetime64[ns]"],
-        "salary": ["float64"],
+        "Salary": ["float64"],
         "ops_hourly_rate": ["float64"],
     },
 }
