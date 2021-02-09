@@ -96,96 +96,67 @@ class TestCheckTable:
 #         assert error is None
 
 
-# class TestFormatReports:
-#     """Tests the main functions in format_reports.py"""
+class TestFormatReports:
+    """Tests the main functions in format_reports.py"""
 
-#     def test_clean_report(self):
-#         """Tests clean_report() against a sample dataframe to make sure that
-#         the column names were standardized, white spaces were stripped,
-#         and rows without a vendor_id were dropped"""
+    def test_clean_report(self):
+        """Tests clean_report() against a sample dataframe to make sure that
+        the column names were standardized and white spaces were stripped."""
 
-#         # setup
-#         cols = ["Extra Space", "Vendor ID", "Document Number", "Date (Julian)"]
-#         df_in = pd.DataFrame(data.DATAFRAMES["sample_raw"])
-#         expected_cols = ["extra_space", "vendor_id", "document_number", "date_julian"]
-#         expected_str = ["Row 1", "Row 2"]
-#         expected_doc = [123, "P195"]
-#         expected_vendor = [55564, 54376]
+        # setup
+        cols = [
+            "Budget Entity",
+            "Position Number",
+        ]
+        df_in = pd.DataFrame(data.DATAFRAMES["sample_raw"])
+        expected_cols = ["budget_entity", "position_number"]
+        expected_entity = [
+            "HEALTH FAC & PRAC REG",
+            "SPECIALTY INST OPERATIONS",
+            "DETENTION CENTERS",
+        ]
+        expected_position = ["25", "64202", "900323"]
 
-#         # execution
-#         df_out = format.clean_report(df_in, return_cols=cols)
-#         out_cols = df_out.columns
-#         out_str = list(df_out["extra_space"])
-#         out_vendor = list(df_out["vendor_id"])
+        # execution
+        df_out = format.clean_report(df_in, return_cols=cols)
+        out_cols = df_out.columns
+        out_entity = list(df_out["budget_entity"])
+        out_position = list(df_out["position_number"])
 
-#         # validation
-#         for col in expected_cols:
-#             assert col in out_cols
-#         assert out_str == expected_str
-#         assert out_vendor == expected_vendor
+        # validation
+        for col in expected_cols:
+            assert col in out_cols
+        assert out_entity == expected_entity
+        assert out_position == expected_position
 
-#     def test_format_comments_report(self):
-#         """Tests format_report() against a dummy comments excel file"""
-#         # input
-#         file_name = "DummyPromptComments.xlsx"
-#         input_format = format.FORMATS["comments"]["input"]
-#         output_format = format.FORMATS["comments"]["output"]
-#         expected = data.DATAFRAMES["comments_output"]
+    def test_format_table(self):
+        """Tests format_table() against dummy .csv file"""
+        # input
+        file_name = "dummy_fl_salaries.csv"
+        input_format = format.FORMATS["input"]
+        output_format = format.FORMATS["output"]
+        expected = data.DATAFRAMES["output"]
 
-#         # setup
-#         file_path = Path.cwd() / "tests" / "format_reports" / file_name
-#         df_in = pd.read_excel(file_path, engine="openpyxl")
-#         passed, errors = format.check_format(df_in, input_format)
-#         assert passed
+        # setup
+        file_path = Path.cwd() / "tests" / "format_reports" / file_name
+        df_in = pd.read_csv(file_path, dtype="object")
+        passed, errors = format.check_format(df_in, input_format)
+        assert passed
 
-#         # execution
-#         passed, message, df_out = format.format_report(df_in, "comments")
-#         matches, errors = format.check_format(df_out, output_format)
+        # execution
+        passed, errors, df_out = format.format_report(df_in, "core integrator")
+        matches, errors = format.check_format(df_out, output_format)
 
-#         print("OUTPUT MESSAGE")
-#         pprint(message)
-#         print("OUTPUT DTYPES")
-#         print(df_out.dtypes)
-#         out_data = df_out.head(2).to_dict("list")
-#         print("OUTPUT")
-#         pprint(out_data)
-#         print("EXPECTED")
-#         pprint(expected)
+        print("OUTPUT DTYPES")
+        print(df_out.dtypes)
+        out_data = df_out.head(2).to_dict("list")
+        print("OUTPUT")
+        pprint(out_data)
+        print("EXPECTED")
+        pprint(expected)
 
-#         # validation
-#         assert passed
-#         assert list(df_out.columns) == list(expected.keys())
-#         assert matches
-#         assert out_data == expected
-
-#     def test_format_core_integrator_report(self):
-#         """Tests format_report() against dummy core integrator excel file"""
-#         # input
-#         file_name = "DummyCoreIntegrator.xlsx"
-#         input_format = format.FORMATS["core integrator"]["input"]
-#         output_format = format.FORMATS["core integrator"]["output"]
-#         expected = data.DATAFRAMES["core_output"]
-
-#         # setup
-#         file_path = Path.cwd() / "tests" / "format_reports" / file_name
-#         df_in = pd.read_excel(file_path, engine="openpyxl")
-#         passed, errors = format.check_format(df_in, input_format)
-#         assert passed
-
-#         # execution
-#         passed, errors, df_out = format.format_report(df_in, "core integrator")
-#         matches, errors = format.check_format(df_out, output_format)
-
-#         print("OUTPUT DTYPES")
-#         print(df_out.dtypes)
-#         out_data = df_out.head(2).to_dict("list")
-#         print("OUTPUT")
-#         pprint(out_data)
-#         print("EXPECTED")
-#         pprint(expected)
-
-#         # validation
-#         assert passed
-#         assert list(df_out.columns) == list(expected.keys())
-#         assert len(df_out["location"]) == 17
-#         assert df_out.head(2).equals(pd.DataFrame(expected))
+        # validation
+        assert passed
+        assert list(df_out.columns) == list(expected.keys())
+        assert len(df_out["location"]) == 17
+        assert df_out.head(2).equals(pd.DataFrame(expected))
