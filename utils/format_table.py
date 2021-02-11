@@ -1,6 +1,6 @@
 import pandas as pd
 from utils.df_formats import FORMATS
-
+import numpy as np
 
 # NON_NULLABLE = ["vendor_id", "document_number"]
 
@@ -52,25 +52,17 @@ def format_table(df_raw):
     )
     df = df.applymap(lambda x: x.upper() if isinstance(x, str) else x)
 
-    df["position_number"] = (
-        df["position_number"].astype("float").astype("Int64").astype(str).str.zfill(7)
-    )
-    df["class_code"] = (
-        df["class_code"].astype("float").astype("Int64").astype(str).str.zfill(5)
-    )
+    df["position_number"] = df["position_number"].apply(lambda x: numeric_string(x, 7))
+    df["class_code"] = df["class_code"].apply(lambda x: numeric_string(x, 5))
 
     salary_map = {"is_salaried": {"SALARIED": True, "OPS": False}}
     full_time_map = {"is_full_time": {"FULL TIME": True, "PART TIME": False}}
-
     df = df.replace(salary_map)
     df = df.replace(full_time_map)
 
-    print(df.head())
-
-    # {'is_salaried': {'accepted': ['bool'], 'actual': 'object'},
-    # 'is_full_time': {'accepted': ['bool'], 'actual': 'object'},
-    # 'state_hire_date': {'accepted': ['datetime64[ns]'], 'actual': 'object'},
-    # 'ops_hourly_rate': {'accepted': ['float64'], 'actual': 'object'}}"
+    df["salary"] = df["salary"].apply(format_salaries)
+    df["ops_hourly_rate"] = df["ops_hourly_rate"].apply(format_salaries)
+    df["state_hire_date"] = df["state_hire_date"].astype("datetime64").dt.date
 
     # check that output dataframe
     # passed, errors = check_format(df, output)
