@@ -2,8 +2,6 @@ import pandas as pd
 from utils.df_formats import FORMATS
 import numpy as np
 
-# NON_NULLABLE = ["vendor_id", "document_number"]
-
 
 def format_salaries(val):
     """
@@ -13,8 +11,9 @@ def format_salaries(val):
     else:
         assert isinstance(val, str)
         if val[0] == "$":
-            val = val[1:]
+            val = val[1:].strip()
         val = val.replace(",", "")
+        val = val.replace(".", "")
     return val
 
 
@@ -42,33 +41,44 @@ def format_table(df_raw):
     # check that the core report matches expected input format
     passed, errors = check_format(df_raw, input)
     if not passed:
-        error = f"Table report doesn't match expected input format: {errors}"
+        error = f"The input table doesn't match expected format: {errors}"
         return False, error, None
 
-    # # clean report and standardize merge columns
+    # clean report and standardize merge columns
     df = clean_report(df_raw)
     df = df.rename(
         columns={"employee_type": "is_salaried", "full/part_time": "is_full_time"}
     )
     df = df.applymap(lambda x: x.upper() if isinstance(x, str) else x)
 
+    # convert ID fields to 0-padded numeric strings
     df["position_number"] = df["position_number"].apply(lambda x: numeric_string(x, 7))
     df["class_code"] = df["class_code"].apply(lambda x: numeric_string(x, 5))
 
+    # convert two cols to booleans
     salary_map = {"is_salaried": {"SALARIED": True, "OPS": False}}
     full_time_map = {"is_full_time": {"FULL TIME": True, "PART TIME": False}}
     df = df.replace(salary_map)
     df = df.replace(full_time_map)
+    df[["is_salaried", "is_full_time"]] = df[["is_salaried", "is_full_time"]].astype(
+        "bool"
+    )
 
+    # format our numeric strings to represent cents as integers
     df["salary"] = df["salary"].apply(format_salaries)
     df["ops_hourly_rate"] = df["ops_hourly_rate"].apply(format_salaries)
+    # cast to integers
+    df["salary"] = pd.to_numeric(df["salary"], errors="coerce").astype(pd.Int64Dtype())
+    df["ops_hourly_rate"] = pd.to_numeric(df["salary"], errors="coerce").astype(
+        pd.Int64Dtype()
+    )
     df["state_hire_date"] = df["state_hire_date"].astype("datetime64").dt.date
 
     # check that output dataframe
-    # passed, errors = check_format(df, output)
-    # if not passed:
-    #     error = f"Table didn't get formatted correctly: {errors}"
-    #     return False, error, None
+    passed, errors = check_format(df, output)
+    if not passed:
+        error = f"Table didn't get formatted correctly: {errors}"
+        return False, error, None
 
     message = f"Successfully formatted Florida salaries table."
     return True, message, df
