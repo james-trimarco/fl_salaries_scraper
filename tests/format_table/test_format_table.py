@@ -73,29 +73,6 @@ class TestCheckTable:
         assert error == exp_error
 
 
-#     @pytest.mark.parametrize(
-#         "filename,expected",
-#         [
-#             ("DummyCoreIntegrator.xlsx", format.FORMATS["core integrator"]["input"]),
-#             ("DummyPromptComments.xlsx", format.FORMATS["comments"]["input"]),
-#         ],
-#     )
-#     def test_dummy_reports(self, filename, expected):
-#         """check_format() should pass when dataframe has expected format"""
-#         # setup
-#         path = Path.cwd() / "tests" / "format_reports" / filename
-#         df = pd.read_excel(path, engine="openpyxl")
-#         print(df.dtypes)
-
-#         # execution
-#         passed, error = format.check_format(df, expected)
-#         print(error)
-
-#         # validation
-#         assert passed
-#         assert error is None
-
-
 class TestFormatReports:
     """Tests the main functions in format_reports.py"""
 
@@ -132,19 +109,22 @@ class TestFormatReports:
     def test_format_table(self):
         """Tests format_table() against dummy .csv file"""
         # input
-        file_name = "dummy_fl_salaries.csv"
+        input_file_name = "dummy_fl_salary_input.csv"
+        output_file_name = "dummy_fl_salary_output.pkl"
+        input_file_path = Path.cwd() / "tests" / "format_table" / input_file_name
+        output_file_path = Path.cwd() / "tests" / "format_table" / output_file_name
         input_format = format.FORMATS["input"]
         output_format = format.FORMATS["output"]
-        expected = data.DATAFRAMES["output"]
 
         # setup
-        file_path = Path.cwd() / "tests" / "format_reports" / file_name
-        df_in = pd.read_csv(file_path, dtype="object")
+        df_in = pd.read_csv(input_file_path, dtype="object")
+        expected = pd.read_pickle(output_file_path)
+
         passed, errors = format.check_format(df_in, input_format)
         assert passed
 
         # execution
-        passed, errors, df_out = format.format_report(df_in, "core integrator")
+        passed, errors, df_out = format.format_table(df_in)
         matches, errors = format.check_format(df_out, output_format)
 
         print("OUTPUT DTYPES")
@@ -158,5 +138,6 @@ class TestFormatReports:
         # validation
         assert passed
         assert list(df_out.columns) == list(expected.keys())
-        assert len(df_out["location"]) == 17
-        assert df_out.head(2).equals(pd.DataFrame(expected))
+        assert (df_out["position_number"].str.len() == 8).all()
+        assert (df_out["class_code"].str.len() == 5).all()
+        # assert df_out.head(2).equals(pd.DataFrame(expected))
