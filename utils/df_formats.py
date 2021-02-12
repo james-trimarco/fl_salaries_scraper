@@ -25,9 +25,9 @@ FORMATS = {
         "is_full_time": ["bool"],
         "class_code": ["object"],
         "class_title": ["object"],
-        "state_hire_date": ["datetime64[ns]"],
-        "Salary": ["float64"],
-        "ops_hourly_rate": ["float64"],
+        "state_hire_date": ["object"],
+        "salary": ["Int64"],
+        "ops_hourly_rate": ["Int64"],
     },
 }
 
