@@ -1,0 +1,33 @@
+FORMATS = {
+    "input": {
+        "Agency Name": ["object"],
+        "Budget Entity": ["object"],
+        "Position Number": ["object"],
+        "Last Name": ["object"],
+        "First Name": ["object"],
+        "Middle Name": ["object"],
+        "Employee Type": ["object"],
+        "Full/Part Time": ["object"],
+        "Class Code": ["object"],
+        "Class Title": ["object"],
+        "State Hire Date": ["object"],
+        "Salary": ["object"],
+        "OPS Hourly Rate": ["object"],
+    },
+    "output": {
+        "agency_name": ["object"],
+        "budget_entity": ["object"],
+        "position_number": ["object"],
+        "last_name": ["object"],
+        "first_name": ["object"],
+        "middle_name": ["object"],
+        "is_salaried": ["bool"],
+        "is_full_time": ["bool"],
+        "class_code": ["object"],
+        "class_title": ["object"],
+        "state_hire_date": ["object"],
+        "salary": ["Int64"],
+        "ops_hourly_rate": ["Int64"],
+    },
+}
+
