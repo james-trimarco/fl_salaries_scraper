@@ -138,6 +138,5 @@ class TestFormatReports:
         # validation
         assert passed
         assert list(df_out.columns) == list(expected.keys())
-        assert (df_out["position_number"].str.len() == 8).all()
-        assert (df_out["class_code"].str.len() == 5).all()
-        # assert df_out.head(2).equals(pd.DataFrame(expected))
+        assert (df_out["position_number"].str.len() == 7).all()
+        assert (df_out["class_code"].dropna().str.len() == 5).all()
