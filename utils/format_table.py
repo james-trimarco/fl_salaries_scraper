@@ -21,7 +21,6 @@ def numeric_string(val, fill):
     """
     """
     if val != val:
-        print("nan detected")
         return np.nan
     else:
         return str(int(val)).zfill(fill)
